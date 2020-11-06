@@ -11,6 +11,7 @@ io.on('connection', (socket) => {
   console.log('a user connected from browser');
 
   socket.on('chat message', (msg) => {
+    io.emit('chat message', msg);
     console.log('message: ' + msg);
   });
   socket.on('disconnect', () => {

@@ -31,3 +31,16 @@ az group delete -n askpregistry-rg
 az acr delete -n askpregistry 
 
 az group delete -n askpwebapp-rg
+
+
+
+========================
+Deploy in Azure Container Instance
+------------------------------
+
+az group create --name askpaci-rg --location eastus
+
+
+az container create --resource-group askpaci-rg --name socketdemo --image askpregistry.azurecr.io/askp/socketdemo:v1  --dns-name-label askpdemo --ports 5000
+
+az group delete -n askpaci-rg
