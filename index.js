@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
     fs.writeFileSync('test.wav', fileBuffer);
 
   // Upload the audio file to azure storage account  
-  // Enter the connect string
+  // Enter the connect string  nnnnn
     var blobService = azure.createBlobService("DefaultEndpointsProtocol=https;AccountName=storagexxxxxxxxxxxxxxxxx");
     blobService.createBlockBlobFromLocalFile('images', 'testinazure.wav', 'test.wav', function(error, result, response) {
     if (!error) {
