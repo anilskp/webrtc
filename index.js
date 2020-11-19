@@ -2,6 +2,7 @@ var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
+var azure = require('azure-storage');
 
 app.get('/', (req, res) => {
 //  res.send('<h1>Hello world</h1>');
@@ -30,6 +31,15 @@ app.get('/', (req, res) => {
 
     
     fs.writeFileSync('test.wav', fileBuffer);
+
+  // Upload the audio file to azure storage account  
+  // Enter the connect string
+    var blobService = azure.createBlobService("DefaultEndpointsProtocol=https;AccountName=storagexxxxxxxxxxxxxxxxx");
+    blobService.createBlockBlobFromLocalFile('images', 'testinazure.wav', 'test.wav', function(error, result, response) {
+    if (!error) {
+    console.log('File uploaded ');
+    }
+});
 
     //const results = await transcribeAudio(fileBuffer);
     //client.emit('results', results);
