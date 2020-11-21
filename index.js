@@ -1,5 +1,6 @@
 var app = require('express')();
 const config = require('config');
+var fs = require('fs');
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
@@ -70,8 +71,9 @@ app.get('/', (req, res) => {
    
     
     // Create the wave file in the local storage
-      fs.writeFileSync('test.wav', fileBuffer);
-
+      //fs.writeFileSync('test.wav', fileBuffer);
+    //  fs.writeFileSync('test.wav', fileBuffer);
+      fs.writeFileSync(vfilename, fileBuffer);
     
     
     // Calling the function to retreive the storage connect string stored in azure keyvault secret
@@ -85,11 +87,19 @@ app.get('/', (req, res) => {
   // Upload the audio file to azure storage account  
   // Enter the connect string  nnnnn
     var blobService = azure.createBlobService(stsec);
-    blobService.createBlockBlobFromLocalFile('images', vfilename, 'test.wav', function(error, result, response) {
+    blobService.createBlockBlobFromLocalFile('images', vfilename, vfilename, function(error, result, response) {
     if (!error) {
-    console.log('File uploaded ');
-    }
-});
+                console.log('File uploaded ');
+                fs.unlink(vfilename, function (err) {
+                  if (err) throw err;
+                  // if no error, file has been deleted successfully
+                  console.log('Temp File deleted!');
+              });
+                }
+    });
+
+   
+
 
     //const results = await transcribeAudio(fileBuffer);
     //client.emit('results', results);
