@@ -10,7 +10,7 @@ const {DefaultAzureCredential, ManagedIdentityCredential} = require('@azure/iden
 const { ClientSecretCredential } = require("@azure/identity");
 const { v4: uuidv4 } = require('uuid');
 var vfilename
-//var tenantId = "a4a1ba9b-8ece-4448-a5dc-d891fad077a3";
+
 
 let appport = config.get('app.port');
 let tenantId = config.get('azure.devtenantId');
