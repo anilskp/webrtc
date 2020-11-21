@@ -8,11 +8,12 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "azure-storage": "^2.10.3",
-    "@azure/keyvault-secrets": "4.0.0",
     "@azure/identity": "1.0.0",
+    "@azure/keyvault-secrets": "4.0.0",
+    "azure-keyvault": "^3.0.4",
+    "azure-storage": "^2.10.3",
+    "config": "^3.3.2",
     "express": "^4.17.1",
-    "socket.io": "^2.3.0",
-    "azure-keyvault": "^3.0.4"
+    "socket.io": "^2.3.0"
   }
 }

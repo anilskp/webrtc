@@ -33,7 +33,8 @@
 <body>
     <div style="margin: 20px">
         <h1 style="font-size: 18px;">Example 4: Speech to Text Transcribe Recognize Call</h1>
-
+        <label for="fname">Patient Number :</label>
+        <input type="text" id="pat_no" name="fname"><br><br>
         <div>
             <button id="start-recording" disabled>Start Recording</button>
             <button id="stop-recording" disabled>Stop Recording</button>
@@ -126,6 +127,8 @@
                     }
                 };
                 // submit the audio file to the server
+                var pno = 5000;
+                socketio.emit('patient_no',document.getElementById("pat_no").value);
                 socketio.emit('message-transcribe', files);
             });
         });

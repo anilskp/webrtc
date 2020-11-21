@@ -1,4 +1,5 @@
 var app = require('express')();
+const config = require('config');
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
@@ -6,10 +7,17 @@ var azure = require('azure-storage');
 const {SecretClient} = require('@azure/keyvault-secrets');
 const {DefaultAzureCredential, ManagedIdentityCredential} = require('@azure/identity');
 const { ClientSecretCredential } = require("@azure/identity");
+const { v4: uuidv4 } = require('uuid');
+var vfilename
+//var tenantId = "a4a1ba9b-8ece-4448-a5dc-d891fad077a3";
 
-var tenantId = "a4a1ba9b-8ece-4448-a5dc-d891fad077a3";
-var clientId = "e652b0c8-603e-4314-a46d-4f938b69f471";
-var clientSecret = "c-AYPWPG637.bHxT526vK~Lpyf6Y3~5zQF";
+let appport = config.get('app.port');
+let tenantId = config.get('azure.devtenantId');
+let clientId = config.get('azure.devclientId');
+let clientSecret = config.get('azure.devclientSecret');
+
+
+console.log(`Tenant id : ${tenantId}`);
 
 //const credential = new ManagedIdentityCredential();
 //const credential = new DefaultAzureCredential();
@@ -23,6 +31,8 @@ const client = new SecretClient(url, credential);
 
 // Replace value with your secret name here
 const secretName = "storagekey";
+
+
 
 
 
@@ -42,6 +52,12 @@ app.get('/', (req, res) => {
     console.log('message: ' + msg);
   });
 
+  client.on('patient_no', async function(pno) {
+    var vpatietid = pno;
+    vfilename = vpatietid+'-'+uuidv4()+'.wav';
+    console.log(vfilename);
+  });
+
   client.on('message-transcribe', async function(data) {
     // we get the dataURL which was sent from the client
     const dataURL = data.audio.dataURL.split(',').pop();
@@ -51,6 +67,8 @@ app.get('/', (req, res) => {
     console.log('Calling Speach API ');
     
 
+   
+    
     // Create the wave file in the local storage
       fs.writeFileSync('test.wav', fileBuffer);
 
@@ -67,7 +85,7 @@ app.get('/', (req, res) => {
   // Upload the audio file to azure storage account  
   // Enter the connect string  nnnnn
     var blobService = azure.createBlobService(stsec);
-    blobService.createBlockBlobFromLocalFile('images', 'testinazure.wav', 'test.wav', function(error, result, response) {
+    blobService.createBlockBlobFromLocalFile('images', vfilename, 'test.wav', function(error, result, response) {
     if (!error) {
     console.log('File uploaded ');
     }
@@ -82,9 +100,11 @@ app.get('/', (req, res) => {
   });
 });
 
-http.listen(5000, () => {
-  console.log('listening on *:5000');
+http.listen(appport, () => {
+  console.log(`listening on *:${appport}`);
 });
+
+
 
 // Function to retreive the storage connect string from the azure keyvault
 async function fetchsecret() {
