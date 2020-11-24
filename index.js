@@ -1,15 +1,20 @@
 var app = require('express')();
 const config = require('config');
 var fs = require('fs');
+const path = require('path');
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
+const axios = require('axios');
 var fs = require('fs');
 var azure = require('azure-storage');
 const {SecretClient} = require('@azure/keyvault-secrets');
 const {DefaultAzureCredential, ManagedIdentityCredential} = require('@azure/identity');
 const { ClientSecretCredential } = require("@azure/identity");
 const { v4: uuidv4 } = require('uuid');
+
 var vfilename
+var vpatietid
+
 
 
 let appport = config.get('app.port');
@@ -54,7 +59,7 @@ app.get('/', (req, res) => {
   });
 
   client.on('patient_no', async function(pno) {
-    var vpatietid = pno;
+    vpatietid = pno;
     vfilename = vpatietid+'-'+uuidv4()+'.wav';
     console.log(vfilename);
   });
@@ -71,13 +76,17 @@ app.get('/', (req, res) => {
    
     
     // Create the wave file in the local storage
-      //fs.writeFileSync('test.wav', fileBuffer);
-    //  fs.writeFileSync('test.wav', fileBuffer);
-      fs.writeFileSync(vfilename, fileBuffer);
-    
+  
+
+      var vdrive = "C:\\"
+      var vfolder = "proj"
+      //fs.writeFileSync(vfilename, fileBuffer);
+      fs.writeFileSync(path.join(vdrive,vfolder,vfilename), fileBuffer);
+
+
     
     // Calling the function to retreive the storage connect string stored in azure keyvault secret
-    const stsec = await fetchsecret();
+    //const stsec = await fetchsecret();
  
 
 
@@ -86,7 +95,8 @@ app.get('/', (req, res) => {
 
   // Upload the audio file to azure storage account  
   // Enter the connect string  nnnnn
-    var blobService = azure.createBlobService(stsec);
+
+  /*  var blobService = azure.createBlobService(stsec);
     blobService.createBlockBlobFromLocalFile('images', vfilename, vfilename, function(error, result, response) {
     if (!error) {
                 console.log('File uploaded ');
@@ -97,8 +107,28 @@ app.get('/', (req, res) => {
               });
                 }
     });
+*/
 
-   
+   // Call Speech to Text API 
+
+  var fname='Can we  opt for online classes';
+ 
+
+  axios
+  .post('https://prod-81.eastus.logic.azure.com:443/workflows/b807d77ea57847669090f30f68d226a2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=hHbqXcdMS7NToxmUa563AZX1i2jKi9pr4aeBZ0qZJ0I', {
+    patientid:vpatietid,question:fname
+  })
+  .then(res => {
+    console.log(`statusCode: ${res.statusCode}`)
+    console.log(res.data)
+  })
+  .catch(error => {
+    console.error(error)
+  })
+
+
+
+
 
 
     //const results = await transcribeAudio(fileBuffer);
