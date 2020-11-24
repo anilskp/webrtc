@@ -112,27 +112,34 @@ app.get('/', (req, res) => {
    // Call Speech to Text API 
 
   var fname='Can we  opt for online classes';
- 
-
+  var result ='AAA'
+  var res;
   axios
   .post('https://prod-81.eastus.logic.azure.com:443/workflows/b807d77ea57847669090f30f68d226a2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=hHbqXcdMS7NToxmUa563AZX1i2jKi9pr4aeBZ0qZJ0I', {
-    patientid:vpatietid,question:fname
+    patientid:vpatietid,fileName:vfilename
   })
   .then(res => {
-    console.log(`statusCode: ${res.statusCode}`)
+    client.emit('results', "Hello");
+    console.log(`statusCode: ${res.status}`)
     console.log(res.data)
+    result = res.data;
+    client.emit('results', result);
+    
+
   })
   .catch(error => {
     console.error(error)
   })
 
+  console.log("I am here");
 
 
 
-
+  
+const results = "I am here"
 
     //const results = await transcribeAudio(fileBuffer);
-    //client.emit('results', results);
+    client.emit('results', results);
 });
 
   client.on('disconnect', () => {
